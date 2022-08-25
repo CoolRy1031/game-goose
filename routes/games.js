@@ -8,6 +8,9 @@ function isLoggedIn(req, res, next){
   res.redirect('auth/google')
 }
 
+router.post('/search', isLoggedIn, gamesCtrl.search)
+router.get('/:id', isLoggedIn, gamesCtrl.show)
+
 export{
   router
 }
