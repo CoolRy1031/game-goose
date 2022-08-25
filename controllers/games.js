@@ -1,4 +1,5 @@
 import { Game } from '../models/game.js'
+import { GameReview } from '../models/gameReview.js'
 import axios from 'axios'
 
 
@@ -28,6 +29,7 @@ function show(req, res) {
         apiResult: response.data,
         game,
 				userHasGame: game?.collectedBy.some(profile => profile._id.equals(req.user.profile._id)),
+        userHasReviewed: game?.reviews.some(review => review.author?.equals(req.user.profile._id)),
       })
     })
   })
