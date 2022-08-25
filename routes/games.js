@@ -10,6 +10,8 @@ function isLoggedIn(req, res, next){
 
 router.post('/search', isLoggedIn, gamesCtrl.search)
 router.get('/:id', isLoggedIn, gamesCtrl.show)
+router.patch('/:id/addToCollection', isLoggedIn, gamesCtrl.addToCollection)
+router.patch('/:id/removeFromCollection', isLoggedIn, gamesCtrl.removeFromCollection)
 
 export{
   router

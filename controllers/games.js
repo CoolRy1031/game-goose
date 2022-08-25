@@ -1,6 +1,6 @@
 import { Game } from '../models/game.js'
 import axios from 'axios'
-import { response } from 'express'
+
 
 function search(req, res) {
   axios.get(`https://api.rawg.io/api/games?page_size=10&search=${req.body.search}&key=${process.env.API_KEY}`)
@@ -21,6 +21,7 @@ function show(req, res) {
   .get(`https://api.rawg.io/api/games/${req.params.id}?key=${process.env.API_KEY}`)
   .then((response) => {
     Game.findOne({ rawgId: response.data.id })
+    .populate('collectedBy')
     .then((game)=> {
       res.render("games/show", {
         title: "Game Details",
@@ -36,7 +37,47 @@ function show(req, res) {
   })
 }
 
+function addToCollection(req,res) {
+  req.body.collectedBy = req.user.profile._id
+  Game.findOne({ rawgId: req.params.id })
+  .then ((game) => {
+    if (game) {
+      game.collectedBy.push(req.user.profile._id)
+      game.save()
+      .then (() => {
+        res.redirect(`/games/${req.params.id}`)
+      })
+    } else {
+      Game.create(req.body)
+      .then (()=> {
+        res.redirect(`/games/${req.params.id}`)
+      })
+    }
+  })
+  .catch (err => {
+    console.log(err)
+    res.redirect('/')
+  })
+}
+
+function removeFromCollection(req,res) {
+  Game.findOne({ rawgId: req.params.id })
+  .then (game => {
+    game.collectedBy.remove({_id: req.user.profile._id})
+    game.save()
+    .then(() => {
+      res.redirect(`/games/${req.params.id}`)
+    })
+  })
+  .catch(err => {
+    console.log(err)
+    res.redirect('/')
+  })
+}
+
 export {
   search,
-  show
+  show,
+  addToCollection,
+  removeFromCollection
 }
