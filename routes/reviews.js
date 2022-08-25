@@ -8,6 +8,8 @@ function isLoggedIn(req, res, next) {
   res.redirect("/auth/google");
 }
 
+router.post('/:id', isLoggedIn, reviewsCtrl.create)
+
 export {
   router
 }
